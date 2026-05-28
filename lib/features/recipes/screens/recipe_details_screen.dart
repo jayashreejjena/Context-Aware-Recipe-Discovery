@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../favorites/providers/favorites_providers.dart';
 import '../models/recipe.dart';
 import '../providers/recipe_providers.dart';
 
@@ -26,7 +27,6 @@ class _RecipeDetailsScreenState extends ConsumerState<RecipeDetailsScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _favoriteController;
   late final Animation<double> _favoriteScale;
-  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -53,31 +53,36 @@ class _RecipeDetailsScreenState extends ConsumerState<RecipeDetailsScreen>
     super.dispose();
   }
 
-  void _toggleFavorite() {
-    setState(() => _isFavorite = !_isFavorite);
+  Future<void> _toggleFavorite(Recipe recipe) async {
+    await ref.read(favoriteRecipesProvider.notifier).toggleFavorite(recipe);
     _favoriteController.forward(from: 0);
   }
 
   @override
   Widget build(BuildContext context) {
     final detailsAsync = ref.watch(recipeDetailsProvider(widget.recipeId));
+    final isFavorite = ref.watch(
+      favoriteRecipesProvider.select(
+        (recipes) => recipes.any((recipe) => recipe.id == widget.recipeId),
+      ),
+    );
 
     return Scaffold(
       body: detailsAsync.when(
         data: (recipe) => _RecipeDetailsContent(
           recipe: recipe,
-          isFavorite: _isFavorite,
+          isFavorite: isFavorite,
           favoriteScale: _favoriteScale,
-          onFavoritePressed: _toggleFavorite,
+          onFavoritePressed: () => _toggleFavorite(recipe),
         ),
         loading: () {
           final initialRecipe = widget.initialRecipe;
           if (initialRecipe != null) {
             return _RecipeDetailsContent(
               recipe: initialRecipe,
-              isFavorite: _isFavorite,
+              isFavorite: isFavorite,
               favoriteScale: _favoriteScale,
-              onFavoritePressed: _toggleFavorite,
+              onFavoritePressed: () => _toggleFavorite(initialRecipe),
               isLoadingDetails: true,
             );
           }

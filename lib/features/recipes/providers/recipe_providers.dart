@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/dio_provider.dart';
+import '../../favorites/providers/favorites_providers.dart';
 import '../data/meal_db_api_service.dart';
 import '../models/meal_category.dart';
 import '../models/recipe.dart';
@@ -44,9 +45,28 @@ final recipeDetailsProvider = FutureProvider.autoDispose.family<Recipe, String>(
       throw ArgumentError('Recipe id is required.');
     }
 
-    return ref.watch(recipeRepositoryProvider).fetchRecipeById(normalizedId);
+    return _fetchRecipeDetails(ref, normalizedId);
   },
 );
+
+Future<Recipe> _fetchRecipeDetails(Ref ref, String recipeId) async {
+  final favoritesRepository = ref.watch(favoritesRepositoryProvider);
+
+  try {
+    final recipe = await ref
+        .watch(recipeRepositoryProvider)
+        .fetchRecipeById(recipeId);
+    await favoritesRepository.cacheViewedRecipe(recipe);
+    ref.invalidate(viewedRecipeProvider(recipeId));
+    return recipe;
+  } catch (_) {
+    final cachedRecipe = favoritesRepository.getViewedRecipe(recipeId);
+    if (cachedRecipe != null) {
+      return cachedRecipe;
+    }
+    rethrow;
+  }
+}
 
 final recipeCategoriesProvider = FutureProvider.autoDispose<List<MealCategory>>(
   (ref) {

@@ -38,4 +38,25 @@ void main() {
     expect(recipe.hasDetails, isFalse);
     expect(recipe.ingredients, isEmpty);
   });
+
+  test('round trips recipe data for local Hive storage', () {
+    const recipe = Recipe(
+      id: '52772',
+      name: 'Teriyaki Chicken Casserole',
+      thumbnailUrl: 'https://example.com/meal.jpg',
+      category: 'Chicken',
+      area: 'Japanese',
+      instructions: 'Bake until cooked.',
+      tags: ['Meat', 'Casserole'],
+      ingredients: [RecipeIngredient(name: 'Chicken', measure: '3 cups')],
+    );
+
+    final restored = Recipe.fromLocalJson(recipe.toLocalJson());
+
+    expect(restored.id, recipe.id);
+    expect(restored.name, recipe.name);
+    expect(restored.instructions, recipe.instructions);
+    expect(restored.tags, recipe.tags);
+    expect(restored.ingredients.single.displayText, '3 cups Chicken');
+  });
 }

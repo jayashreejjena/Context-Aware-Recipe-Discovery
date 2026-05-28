@@ -48,6 +48,38 @@ class Recipe {
     );
   }
 
+  factory Recipe.fromLocalJson(Map<dynamic, dynamic> json) {
+    return Recipe(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      thumbnailUrl: json['thumbnailUrl']?.toString() ?? '',
+      category: _nullableString(json['category']),
+      area: _nullableString(json['area']),
+      instructions: _nullableString(json['instructions']),
+      youtubeUrl: _nullableString(json['youtubeUrl']),
+      sourceUrl: _nullableString(json['sourceUrl']),
+      tags: _parseLocalStringList(json['tags']),
+      ingredients: _parseLocalIngredients(json['ingredients']),
+    );
+  }
+
+  Map<String, dynamic> toLocalJson() {
+    return {
+      'id': id,
+      'name': name,
+      'thumbnailUrl': thumbnailUrl,
+      'category': category,
+      'area': area,
+      'instructions': instructions,
+      'youtubeUrl': youtubeUrl,
+      'sourceUrl': sourceUrl,
+      'tags': tags,
+      'ingredients': ingredients
+          .map((ingredient) => ingredient.toLocalJson())
+          .toList(growable: false),
+    };
+  }
+
   Recipe copyWith({
     String? id,
     String? name,
@@ -114,6 +146,28 @@ class Recipe {
 
     return List.unmodifiable(ingredients);
   }
+
+  static List<String> _parseLocalStringList(Object? value) {
+    if (value is! List) {
+      return const [];
+    }
+
+    return value
+        .map((item) => item.toString())
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  static List<RecipeIngredient> _parseLocalIngredients(Object? value) {
+    if (value is! List) {
+      return const [];
+    }
+
+    return value
+        .whereType<Map<dynamic, dynamic>>()
+        .map(RecipeIngredient.fromLocalJson)
+        .toList(growable: false);
+  }
 }
 
 class RecipeIngredient {
@@ -121,6 +175,17 @@ class RecipeIngredient {
 
   final String name;
   final String? measure;
+
+  factory RecipeIngredient.fromLocalJson(Map<dynamic, dynamic> json) {
+    return RecipeIngredient(
+      name: json['name']?.toString() ?? '',
+      measure: Recipe._nullableString(json['measure']),
+    );
+  }
+
+  Map<String, dynamic> toLocalJson() {
+    return {'name': name, 'measure': measure};
+  }
 
   String get displayText {
     final value = measure;
