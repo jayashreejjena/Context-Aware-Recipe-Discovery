@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/cached_recipe_image.dart';
 import '../../favorites/providers/favorites_providers.dart';
 import '../models/recipe.dart';
 import '../providers/recipe_providers.dart';
@@ -115,7 +116,6 @@ class _RecipeDetailsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return CustomScrollView(
@@ -145,15 +145,10 @@ class _RecipeDetailsContent extends StatelessWidget {
           flexibleSpace: FlexibleSpaceBar(
             background: Hero(
               tag: 'recipe-image-${recipe.id}',
-              child: Image.network(
-                recipe.thumbnailUrl,
+              child: CachedRecipeImage(
+                imageUrl: recipe.thumbnailUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return ColoredBox(
-                    color: colorScheme.surfaceContainerHighest,
-                    child: const Icon(Icons.restaurant, size: 56),
-                  );
-                },
+                iconSize: 56,
               ),
             ),
           ),

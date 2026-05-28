@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/cached_recipe_image.dart';
 import '../models/recipe.dart';
 
 class RecipeCard extends StatelessWidget {
@@ -127,18 +128,16 @@ class _RecipeImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 112,
-      height: 112,
-      child: Image.network(
-        url,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return ColoredBox(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            child: const Icon(Icons.restaurant),
-          );
-        },
+    return ClipRect(
+      child: SizedBox(
+        width: 112,
+        height: 112,
+        child: CachedRecipeImage(
+          imageUrl: url,
+          width: 112,
+          height: 112,
+          iconSize: 28,
+        ),
       ),
     );
   }
