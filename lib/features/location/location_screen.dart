@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/app_error_view.dart';
 import '../../core/widgets/app_placeholder.dart';
 import '../recipes/screens/recipe_details_screen.dart';
 import '../recipes/widgets/recipe_card.dart';
@@ -55,7 +56,7 @@ class LocationScreen extends ConsumerWidget {
               separatorBuilder: (context, index) => const SizedBox(height: 12),
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const _LocationLoadingList(),
           error: (error, stackTrace) => _LocationError(
             message: error.toString(),
             onRetry: () {
@@ -64,7 +65,7 @@ class LocationScreen extends ConsumerWidget {
             },
           ),
         ),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const _LocationLoadingList(),
         error: (error, stackTrace) => _LocationError(
           message: error.toString(),
           onRetry: () {
@@ -73,6 +74,20 @@ class LocationScreen extends ConsumerWidget {
           },
         ),
       ),
+    );
+  }
+}
+
+class _LocationLoadingList extends StatelessWidget {
+  const _LocationLoadingList();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: 5,
+      itemBuilder: (context, index) => const RecipeCardSkeleton(),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
     );
   }
 }
@@ -119,41 +134,10 @@ class _LocationError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.location_off,
-              size: 44,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Location unavailable',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+    return AppErrorView(
+      title: 'Location unavailable',
+      message: message,
+      onRetry: onRetry,
     );
   }
 }

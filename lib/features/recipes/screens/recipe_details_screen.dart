@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/widgets/app_error_view.dart';
+import '../../../core/widgets/app_shimmer.dart';
 import '../../../core/widgets/cached_recipe_image.dart';
 import '../../favorites/providers/favorites_providers.dart';
 import '../models/recipe.dart';
@@ -275,12 +277,24 @@ class _InlineDetailsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _SectionTitle(title: 'Loading details'),
         const SizedBox(height: 12),
-        LinearProgressIndicator(borderRadius: BorderRadius.circular(999)),
+        AppShimmer(
+          child: Column(
+            children: [
+              _DetailSkeletonLine(color: color, widthFactor: 1),
+              const SizedBox(height: 10),
+              _DetailSkeletonLine(color: color, widthFactor: 0.88),
+              const SizedBox(height: 10),
+              _DetailSkeletonLine(color: color, widthFactor: 0.72),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -291,7 +305,37 @@ class _RecipeDetailsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
+
+    return AppShimmer(
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: Container(height: 320, color: color)),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                _DetailSkeletonLine(color: color, height: 30, widthFactor: 0.8),
+                const SizedBox(height: 12),
+                _DetailSkeletonLine(
+                  color: color,
+                  height: 28,
+                  widthFactor: 0.45,
+                ),
+                const SizedBox(height: 28),
+                _DetailSkeletonLine(color: color, height: 22, widthFactor: 0.4),
+                const SizedBox(height: 12),
+                _DetailSkeletonLine(color: color, widthFactor: 1),
+                const SizedBox(height: 10),
+                _DetailSkeletonLine(color: color, widthFactor: 0.92),
+                const SizedBox(height: 10),
+                _DetailSkeletonLine(color: color, widthFactor: 0.74),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -305,41 +349,37 @@ class _RecipeDetailsError extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Recipe Details')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 44,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Unable to load recipe',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-              ),
-            ],
-          ),
+      body: AppErrorView(
+        title: 'Unable to load recipe',
+        message: message,
+        onRetry: onRetry,
+      ),
+    );
+  }
+}
+
+class _DetailSkeletonLine extends StatelessWidget {
+  const _DetailSkeletonLine({
+    required this.color,
+    required this.widthFactor,
+    this.height = 16,
+  });
+
+  final Color color;
+  final double widthFactor;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: widthFactor,
+      alignment: Alignment.centerLeft,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(8),
         ),
+        child: SizedBox(height: height),
       ),
     );
   }

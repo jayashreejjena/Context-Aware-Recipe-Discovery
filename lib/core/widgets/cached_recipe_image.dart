@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'app_shimmer.dart';
+
 class CachedRecipeImage extends StatelessWidget {
   const CachedRecipeImage({
     required this.imageUrl,
@@ -58,15 +60,11 @@ class _ImagePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
+
     return ColoredBox(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: const Center(
-        child: SizedBox(
-          width: 22,
-          height: 22,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      ),
+      color: color,
+      child: AppShimmer(child: ColoredBox(color: color)),
     );
   }
 }

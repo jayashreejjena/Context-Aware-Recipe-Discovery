@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/widgets/app_shimmer.dart';
 import '../../../core/widgets/cached_recipe_image.dart';
 import '../models/recipe.dart';
 
@@ -83,38 +84,79 @@ class RecipeCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.surfaceContainerHighest;
 
-    return Card(
-      color: Colors.white,
+    return AppShimmer(
+      child: Card(
+        color: Colors.white,
+        child: SizedBox(
+          height: 112,
+          child: Row(
+            children: [
+              Container(width: 112, height: 112, color: color),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FractionallySizedBox(
+                        widthFactor: 0.82,
+                        child: _SkeletonLine(color: color, height: 18),
+                      ),
+                      const SizedBox(height: 10),
+                      FractionallySizedBox(
+                        widthFactor: 0.56,
+                        child: _SkeletonLine(color: color, height: 18),
+                      ),
+                      const Spacer(),
+                      FractionallySizedBox(
+                        widthFactor: 0.38,
+                        child: _SkeletonLine(color: color, height: 26),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CompactRecipeTileSkeleton extends StatelessWidget {
+  const CompactRecipeTileSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.surfaceContainerHighest;
+
+    return AppShimmer(
       child: SizedBox(
-        height: 112,
-        child: Row(
-          children: [
-            Container(width: 112, height: 112, color: color),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
+        width: 168,
+        child: Card(
+          color: Colors.white,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(width: 168, height: 104, color: color),
+              Padding(
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    _SkeletonLine(color: color, height: 14),
+                    const SizedBox(height: 8),
                     FractionallySizedBox(
-                      widthFactor: 0.82,
-                      child: _SkeletonLine(color: color, height: 18),
-                    ),
-                    const SizedBox(height: 10),
-                    FractionallySizedBox(
-                      widthFactor: 0.56,
-                      child: _SkeletonLine(color: color, height: 18),
-                    ),
-                    const Spacer(),
-                    FractionallySizedBox(
-                      widthFactor: 0.38,
-                      child: _SkeletonLine(color: color, height: 26),
+                      widthFactor: 0.62,
+                      child: _SkeletonLine(color: color, height: 14),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
