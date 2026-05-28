@@ -121,6 +121,52 @@ class RecipeCardSkeleton extends StatelessWidget {
   }
 }
 
+class CompactRecipeTile extends StatelessWidget {
+  const CompactRecipeTile({
+    required this.recipe,
+    required this.onTap,
+    super.key,
+  });
+
+  final Recipe recipe;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 168,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        color: Colors.white,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CachedRecipeImage(
+                imageUrl: recipe.thumbnailUrl,
+                width: 168,
+                height: 104,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Text(
+                  recipe.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _RecipeImage extends StatelessWidget {
   const _RecipeImage({required this.url});
 

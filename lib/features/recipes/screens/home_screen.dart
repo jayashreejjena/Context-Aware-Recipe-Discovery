@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/widgets/app_placeholder.dart';
 import '../../favorites/favorites_screen.dart';
+import '../../location/location_screen.dart';
+import '../../location/providers/location_providers.dart';
 import '../models/recipe.dart';
 import '../providers/recipe_providers.dart';
 import '../widgets/recipe_card.dart';
@@ -76,6 +78,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => context.pushNamed(FavoritesScreen.routeName),
             icon: const Icon(Icons.favorite_border),
           ),
+          IconButton(
+            tooltip: 'Cuisine near you',
+            onPressed: () => context.pushNamed(LocationScreen.routeName),
+            icon: const Icon(Icons.public),
+          ),
         ],
       ),
       body: SafeArea(
@@ -100,6 +107,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: _HomeSectionHeader(query: _debouncedQuery),
                 ),
               ),
+              if (_debouncedQuery.isEmpty) const _LocationRecipeSection(),
               recipesAsync.when(
                 data: (recipes) =>
                     _RecipeList(recipes: recipes, query: _debouncedQuery),
@@ -113,6 +121,118 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LocationRecipeSection extends ConsumerWidget {
+  const _LocationRecipeSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final contextAsync = ref.watch(locationCuisineContextProvider);
+    final recipesAsync = ref.watch(locationRecipesProvider);
+
+    return SliverToBoxAdapter(
+      child: contextAsync.when(
+        data: (locationContext) => recipesAsync.when(
+          data: (recipes) {
+            if (recipes.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            return _ContextualRecipeRail(
+              title: '${locationContext.cuisineArea} picks',
+              subtitle: 'Inspired by ${locationContext.country}',
+              recipes: recipes.take(8).toList(growable: false),
+            );
+          },
+          loading: () => const _ContextualRecipeLoading(),
+          error: (error, stackTrace) => const SizedBox.shrink(),
+        ),
+        loading: () => const _ContextualRecipeLoading(),
+        error: (error, stackTrace) => const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
+class _ContextualRecipeRail extends StatelessWidget {
+  const _ContextualRecipeRail({
+    required this.title,
+    required this.subtitle,
+    required this.recipes,
+  });
+
+  final String title;
+  final String subtitle;
+  final List<Recipe> recipes;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 176,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: recipes.length,
+              itemBuilder: (context, index) {
+                final recipe = recipes[index];
+                return CompactRecipeTile(
+                  recipe: recipe,
+                  onTap: () => context.pushNamed(
+                    RecipeDetailsScreen.routeName,
+                    pathParameters: {'id': recipe.id},
+                    extra: recipe,
+                  ),
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContextualRecipeLoading extends StatelessWidget {
+  const _ContextualRecipeLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 20),
+      child: LinearProgressIndicator(),
     );
   }
 }
