@@ -107,7 +107,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   child: _HomeSectionHeader(query: _debouncedQuery),
                 ),
               ),
-              if (_debouncedQuery.isEmpty) const _LocationRecipeSection(),
+              if (_debouncedQuery.isEmpty) ...[
+                const _MealTimeRecipeSection(),
+                const _LocationRecipeSection(),
+              ],
               recipesAsync.when(
                 data: (recipes) =>
                     _RecipeList(recipes: recipes, query: _debouncedQuery),
@@ -120,6 +123,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MealTimeRecipeSection extends ConsumerWidget {
+  const _MealTimeRecipeSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final suggestion = ref.watch(mealTimeSuggestionProvider);
+    final recipesAsync = ref.watch(mealTimeRecipesProvider);
+
+    return SliverToBoxAdapter(
+      child: recipesAsync.when(
+        data: (recipes) {
+          if (recipes.isEmpty) {
+            return const SizedBox.shrink();
+          }
+
+          return _ContextualRecipeRail(
+            title: suggestion.title,
+            subtitle: suggestion.subtitle,
+            recipes: recipes.take(8).toList(growable: false),
+          );
+        },
+        loading: () => const _ContextualRecipeLoading(),
+        error: (error, stackTrace) => const SizedBox.shrink(),
       ),
     );
   }

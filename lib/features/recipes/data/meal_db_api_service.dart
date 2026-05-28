@@ -23,6 +23,16 @@ class MealDbApiService {
     return meals.map(Recipe.fromFilterJson).toList(growable: false);
   }
 
+  Future<List<Recipe>> filterRecipesByCategory(String category) async {
+    final response = await _get(
+      '/filter.php',
+      queryParameters: {'c': category},
+    );
+    final meals = _readList(response.data, 'meals');
+
+    return meals.map(Recipe.fromFilterJson).toList(growable: false);
+  }
+
   Future<Recipe> fetchRecipeById(String id) async {
     final response = await _get('/lookup.php', queryParameters: {'i': id});
     final meals = _readList(response.data, 'meals');

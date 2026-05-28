@@ -19,6 +19,11 @@ class MealDbRecipeRepository implements RecipeRepository {
   }
 
   @override
+  Future<List<Recipe>> fetchRecipesByCategory(String category) {
+    return _apiService.filterRecipesByCategory(category.trim());
+  }
+
+  @override
   Future<Recipe> fetchRecipeById(String id) {
     return _apiService.fetchRecipeById(id.trim());
   }

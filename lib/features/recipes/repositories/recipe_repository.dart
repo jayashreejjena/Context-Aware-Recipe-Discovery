@@ -6,6 +6,8 @@ abstract class RecipeRepository {
 
   Future<List<Recipe>> fetchRecipesByArea(String area);
 
+  Future<List<Recipe>> fetchRecipesByCategory(String category);
+
   Future<Recipe> fetchRecipeById(String id);
 
   Future<List<MealCategory>> fetchCategories();

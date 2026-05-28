@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:recipediscovery/core/services/app.dart';
+import 'package:recipediscovery/features/location/models/location_cuisine_context.dart';
+import 'package:recipediscovery/features/location/providers/location_providers.dart';
 import 'package:recipediscovery/features/recipes/models/recipe.dart';
 import 'package:recipediscovery/features/recipes/providers/recipe_providers.dart';
 
@@ -20,6 +22,15 @@ void main() {
               ),
             ];
           }),
+          mealTimeRecipesProvider.overrideWith((ref) async => const []),
+          locationCuisineContextProvider.overrideWith((ref) async {
+            return const LocationCuisineContext(
+              country: 'India',
+              countryCode: 'IN',
+              cuisineArea: 'Indian',
+            );
+          }),
+          locationRecipesProvider.overrideWith((ref) async => const []),
         ],
         child: const RecipeDiscoveryApp(),
       ),

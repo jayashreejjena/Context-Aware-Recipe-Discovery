@@ -4,6 +4,7 @@ import '../../../core/network/dio_provider.dart';
 import '../../favorites/providers/favorites_providers.dart';
 import '../data/meal_db_api_service.dart';
 import '../models/meal_category.dart';
+import '../models/meal_time_suggestion.dart';
 import '../models/recipe.dart';
 import '../repositories/meal_db_recipe_repository.dart';
 import '../repositories/recipe_repository.dart';
@@ -37,6 +38,22 @@ final areaRecipesProvider = FutureProvider.autoDispose
           .watch(recipeRepositoryProvider)
           .fetchRecipesByArea(normalizedArea);
     });
+
+final currentDateTimeProvider = Provider<DateTime>((ref) {
+  return DateTime.now();
+});
+
+final mealTimeSuggestionProvider = Provider<MealTimeSuggestion>((ref) {
+  return MealTimeSuggestion.fromDateTime(ref.watch(currentDateTimeProvider));
+});
+
+final mealTimeRecipesProvider = FutureProvider.autoDispose<List<Recipe>>((ref) {
+  final suggestion = ref.watch(mealTimeSuggestionProvider);
+
+  return ref
+      .watch(recipeRepositoryProvider)
+      .fetchRecipesByCategory(suggestion.category);
+});
 
 final recipeDetailsProvider = FutureProvider.autoDispose.family<Recipe, String>(
   (ref, id) {
