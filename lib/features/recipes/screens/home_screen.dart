@@ -10,7 +10,7 @@ import '../models/recipe.dart';
 import '../providers/recipe_providers.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/recipe_search_bar.dart';
-import 'recipe_details_placeholder_screen.dart';
+import 'recipe_details_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -177,8 +177,9 @@ class _RecipeList extends StatelessWidget {
           return RecipeCard(
             recipe: recipe,
             onTap: () => context.pushNamed(
-              RecipeDetailsPlaceholderScreen.routeName,
+              RecipeDetailsScreen.routeName,
               pathParameters: {'id': recipe.id},
+              extra: recipe,
             ),
           );
         },

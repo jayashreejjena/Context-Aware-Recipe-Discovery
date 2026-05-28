@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../features/favorites/favorites_screen.dart';
 import '../../features/location/location_screen.dart';
 import '../../features/notifications/notifications_screen.dart';
+import '../../features/recipes/models/recipe.dart';
 import '../../features/recipes/screens/home_screen.dart';
-import '../../features/recipes/screens/recipe_details_placeholder_screen.dart';
+import '../../features/recipes/screens/recipe_details_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -17,11 +18,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
-        path: RecipeDetailsPlaceholderScreen.routePath,
-        name: RecipeDetailsPlaceholderScreen.routeName,
+        path: RecipeDetailsScreen.routePath,
+        name: RecipeDetailsScreen.routeName,
         builder: (context, state) {
           final recipeId = state.pathParameters['id']!;
-          return RecipeDetailsPlaceholderScreen(recipeId: recipeId);
+          return RecipeDetailsScreen(
+            recipeId: recipeId,
+            initialRecipe: state.extra is Recipe
+                ? state.extra! as Recipe
+                : null,
+          );
         },
       ),
       GoRoute(

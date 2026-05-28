@@ -22,7 +22,10 @@ class RecipeCard extends StatelessWidget {
           height: 112,
           child: Row(
             children: [
-              _RecipeImage(url: recipe.thumbnailUrl),
+              Hero(
+                tag: 'recipe-image-${recipe.id}',
+                child: _RecipeImage(url: recipe.thumbnailUrl),
+              ),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(14),

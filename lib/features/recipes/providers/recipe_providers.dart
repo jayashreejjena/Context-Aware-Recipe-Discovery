@@ -37,6 +37,17 @@ final areaRecipesProvider = FutureProvider.autoDispose
           .fetchRecipesByArea(normalizedArea);
     });
 
+final recipeDetailsProvider = FutureProvider.autoDispose.family<Recipe, String>(
+  (ref, id) {
+    final normalizedId = id.trim();
+    if (normalizedId.isEmpty) {
+      throw ArgumentError('Recipe id is required.');
+    }
+
+    return ref.watch(recipeRepositoryProvider).fetchRecipeById(normalizedId);
+  },
+);
+
 final recipeCategoriesProvider = FutureProvider.autoDispose<List<MealCategory>>(
   (ref) {
     return ref.watch(recipeRepositoryProvider).fetchCategories();
