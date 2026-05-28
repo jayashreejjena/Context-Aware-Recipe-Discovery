@@ -503,6 +503,58 @@ Build APK:
 flutter build apk --release
 ```
 
+## GitHub Actions CI/CD
+
+The CI workflow is defined in:
+
+```text
+.github/workflows/flutter-ci-release.yml
+```
+
+It runs automatically on:
+
+- Pull requests to `main` or `master`
+- Pushes to `main` or `master`
+- Version tags like `v1.0.0`
+- Manual dispatch from the GitHub Actions tab
+
+Workflow steps:
+
+```text
+Checkout repository
+ -> set up Java 17
+ -> set up Flutter stable
+ -> flutter pub get
+ -> flutter analyze
+ -> flutter test
+ -> flutter build apk --release
+ -> upload APK as workflow artifact
+ -> publish GitHub Release when the push is a v* tag
+```
+
+For normal pushes and pull requests, the generated APK is available as a workflow artifact named:
+
+```text
+recipe-discovery-apk
+```
+
+To create a GitHub Release with the APK attached:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The workflow will build:
+
+```text
+release/recipe-discovery-v1.0.0.apk
+```
+
+and attach it to the generated GitHub Release.
+
+Note: the current Android release build uses the debug signing config from the default Flutter scaffold. This is fine for assignment review APKs, but a production Play Store release should use a private upload keystore.
+
 ## Testing
 
 Current tests cover:
@@ -544,8 +596,5 @@ Implemented:
 - Step 8: Time-based recommendations
 - Step 9: Local notifications
 - Step 10: Shimmer, error, empty, no-internet states
+- Step 11: GitHub Actions CI/CD and APK release workflow
 
-Remaining:
-
-- GitHub Actions CI/CD
-- Optional release APK automation
