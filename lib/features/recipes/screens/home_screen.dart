@@ -8,6 +8,7 @@ import '../../../core/widgets/app_placeholder.dart';
 import '../../favorites/favorites_screen.dart';
 import '../../location/location_screen.dart';
 import '../../location/providers/location_providers.dart';
+import '../../notifications/notifications_screen.dart';
 import '../models/recipe.dart';
 import '../providers/recipe_providers.dart';
 import '../widgets/recipe_card.dart';
@@ -82,6 +83,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             tooltip: 'Cuisine near you',
             onPressed: () => context.pushNamed(LocationScreen.routeName),
             icon: const Icon(Icons.public),
+          ),
+          IconButton(
+            tooltip: 'Meal reminders',
+            onPressed: () => context.pushNamed(NotificationsScreen.routeName),
+            icon: const Icon(Icons.notifications_none),
           ),
         ],
       ),
