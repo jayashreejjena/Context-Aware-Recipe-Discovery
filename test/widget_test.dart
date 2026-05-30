@@ -35,7 +35,7 @@ void main() {
         child: const RecipeDiscoveryApp(),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.text('Recipe Discovery'), findsOneWidget);
     expect(find.text('Popular recipes'), findsOneWidget);
