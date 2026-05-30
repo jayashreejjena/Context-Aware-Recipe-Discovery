@@ -35,7 +35,11 @@ void main() {
         child: const RecipeDiscoveryApp(),
       ),
     );
-    await tester.pumpAndSettle();
+    // pumpAndSettle() cannot be used here because the shimmer loading widget
+    // runs a continuous animation that never settles. Instead, pump enough
+    // frames for the router to navigate and the async providers to resolve.
+    await tester.pump(); // let GoRouter navigate to the initial route
+    await tester.pump(const Duration(seconds: 1)); // let FutureProviders resolve
 
     expect(find.text('Recipe Discovery'), findsOneWidget);
     expect(find.text('Popular recipes'), findsOneWidget);
